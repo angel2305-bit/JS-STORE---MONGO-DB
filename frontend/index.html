@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JS Deportive Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+
+<div id="pantallaAuth">
+  <div class="auth-bg">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-circle">JS</div>
+        <div class="logo-text">
+          <span class="logo-top">DEPORTIVE</span>
+          <span class="logo-bot">STORE</span>
+        </div>
+      </div>
+      <div id="formLogin">
+        <h2 class="auth-title">INICIA SESIÓN</h2>
+        <p class="auth-sub">Accede para ver el catálogo y hacer pedidos</p>
+        <div class="mb-3">
+          <label class="form-label-custom">Correo electrónico</label>
+          <input type="email" id="loginEmail" class="input-custom" placeholder="tu@correo.com"
+            onkeydown="if(event.key==='Enter') document.getElementById('loginPassword').focus()"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label-custom">Contraseña</label>
+          <input type="password" id="loginPassword" class="input-custom" placeholder="••••••••"
+            onkeydown="if(event.key==='Enter') Auth.login()"/>
+        </div>
+        <p id="loginError" class="auth-error"></p>
+        <button class="btn-js btn-js-primary w-100 mb-3" onclick="Auth.login()">ENTRAR</button>
+        <p class="auth-switch">¿No tienes cuenta? <span onclick="Auth.mostrarRegistro()">Regístrate aquí</span></p>
+      </div>
+      <div id="formRegistro" style="display:none">
+        <h2 class="auth-title">CREAR CUENTA</h2>
+        <p class="auth-sub">Regístrate para comprar en JS Deportive Store</p>
+        <div class="row g-2 mb-2">
+          <div class="col-6">
+            <label class="form-label-custom">Nombre *</label>
+            <input type="text" id="regNombre" class="input-custom" placeholder="Juan"/>
+          </div>
+          <div class="col-6">
+            <label class="form-label-custom">Apellido</label>
+            <input type="text" id="regApellido" class="input-custom" placeholder="Pérez"/>
+          </div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label-custom">Correo electrónico *</label>
+          <input type="email" id="regEmail" class="input-custom" placeholder="tu@correo.com"/>
+        </div>
+        <div class="mb-2">
+          <label class="form-label-custom">Teléfono</label>
+          <input type="text" id="regTelefono" class="input-custom" placeholder="3001234567"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label-custom">Contraseña *</label>
+          <input type="password" id="regPassword" class="input-custom" placeholder="Mínimo 6 caracteres"/>
+        </div>
+        <p id="registroError" class="auth-error"></p>
+        <button class="btn-js btn-js-primary w-100 mb-3" onclick="Auth.registro()">CREAR CUENTA</button>
+        <p class="auth-switch">¿Ya tienes cuenta? <span onclick="Auth.mostrarLogin()">Inicia sesión</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="appPrincipal" style="display:none">
+  <nav class="navbar-js">
+    <div class="navbar-brand-js">
+      <div class="logo-circle sm">JS</div>
+      <span>DEPORTIVE STORE</span>
+    </div>
+    <div class="navbar-links" id="navCliente" style="display:none">
+      <button class="nav-link-js" data-view="catalogo"   onclick="App.ir('catalogo')">CATÁLOGO</button>
+      <button class="nav-link-js" data-view="misPedidos" onclick="App.ir('misPedidos')">MIS PEDIDOS</button>
+      <button class="nav-link-js carrito-btn" data-view="carrito" onclick="App.ir('carrito')">
+        🛒 <span class="carrito-badge" id="carritoBadge">0</span>
+      </button>
+      <button class="nav-link-js" data-view="ayuda" onclick="App.ir('ayuda')">AYUDA</button>
+    </div>
+    <div class="navbar-links" id="navAdmin" style="display:none">
+      <button class="nav-link-js" data-view="adminDashboard" onclick="App.ir('adminDashboard')">DASHBOARD</button>
+      <button class="nav-link-js" data-view="adminProductos" onclick="App.ir('adminProductos')">PRODUCTOS</button>
+      <button class="nav-link-js" data-view="adminPedidos"   onclick="App.ir('adminPedidos')">PEDIDOS</button>
+    </div>
+    <div class="navbar-user">
+      <span id="userNombre"></span>
+      <button class="btn-js btn-js-outline sm" onclick="Auth.logout()">SALIR</button>
+    </div>
+  </nav>
+
+  <main class="app-main">
+
+    <section class="view" id="view-catalogo">
+      <div class="view-header">
+        <h1 class="view-title">CATÁLOGO</h1>
+        <div class="categorias-filter" id="categoriasFilter"></div>
+      </div>
+      <div class="productos-grid" id="productosGrid"><div class="loading-state">Cargando productos...</div></div>
+    </section>
+
+    <section class="view" id="view-carrito">
+      <div class="view-header"><h1 class="view-title">MI CARRITO</h1></div>
+      <div class="row g-4">
+        <div class="col-lg-8"><div id="carritoItems"><p class="empty-state">Tu carrito está vacío</p></div></div>
+        <div class="col-lg-4">
+          <div class="carrito-resumen" id="carritoResumen" style="display:none">
+            <h3>RESUMEN DEL PEDIDO</h3>
+            <div class="resumen-linea"><span>Subtotal</span><span id="resumenSubtotal">$0</span></div>
+            <div class="resumen-linea total"><span>TOTAL</span><span id="resumenTotal">$0</span></div>
+            <hr style="border-color:var(--borde)"/>
+            <label class="form-label-custom">Dirección de entrega *</label>
+            <input type="text" id="direccionEntrega" class="input-custom mb-2" placeholder="Calle, Barrio, Ciudad"/>
+            <label class="form-label-custom">Nota para Angel</label>
+            <textarea id="notaPedido" class="input-custom mb-3" rows="2" placeholder="Ej: Llamar antes de entregar"></textarea>
+            <button class="btn-js btn-js-primary w-100" onclick="Carrito.confirmarPedido()">✅ CONFIRMAR PEDIDO</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-misPedidos">
+      <div class="view-header"><h1 class="view-title">MIS PEDIDOS</h1></div>
+      <div id="misPedidosList"><div class="loading-state">Cargando...</div></div>
+    </section>
+
+    <section class="view" id="view-ayuda">
+      <div class="view-header"><h1 class="view-title">AYUDA</h1></div>
+      <div class="manual-container">
+        <div class="manual-section">
+          <h2>🛍️ ¿Cómo comprar?</h2>
+          <div class="manual-steps">
+            <div class="manual-step"><span class="step-num">1</span><div><strong>Explora el catálogo</strong><p>Ve a CATÁLOGO y navega entre los productos. Usa los botones de categoría para filtrar.</p></div></div>
+            <div class="manual-step"><span class="step-num">2</span><div><strong>Elige tu producto</strong><p>Haz clic en un producto para ver la foto, descripción y precio.</p></div></div>
+            <div class="manual-step"><span class="step-num">3</span><div><strong>Selecciona la talla</strong><p>Elige la talla y haz clic en AGREGAR AL CARRITO.</p></div></div>
+            <div class="manual-step"><span class="step-num">4</span><div><strong>Confirma tu pedido</strong><p>Ve al carrito 🛒, escribe tu dirección y haz clic en CONFIRMAR PEDIDO.</p></div></div>
+            <div class="manual-step"><span class="step-num">5</span><div><strong>Espera confirmación</strong><p>Angel revisará tu pedido y te contactará por WhatsApp para coordinar el pago.</p></div></div>
+          </div>
+        </div>
+        <div class="manual-section">
+          <h2>📦 Estados de los pedidos</h2>
+          <div class="estados-grid">
+            <div class="estado-item"><span class="badge-estado estado-Pendiente">Pendiente</span><p>Tu pedido fue recibido y está esperando confirmación.</p></div>
+            <div class="estado-item"><span class="badge-estado estado-Confirmado">Confirmado</span><p>Angel confirmó el pedido y lo está preparando.</p></div>
+            <div class="estado-item"><span class="badge-estado estado-Enviado">Enviado</span><p>Tu pedido está en camino.</p></div>
+            <div class="estado-item"><span class="badge-estado estado-Entregado">Entregado</span><p>¡Ya recibiste tu pedido!</p></div>
+            <div class="estado-item"><span class="badge-estado estado-Cancelado">Cancelado</span><p>El pedido fue cancelado.</p></div>
+          </div>
+        </div>
+        <div class="manual-section">
+          <h2>❓ Preguntas frecuentes</h2>
+          <div class="faq-list">
+            <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">¿Cómo pago mi pedido? <span>▼</span></div><div class="faq-a">El pago se coordina con Angel directamente por WhatsApp. Acepta Nequi, transferencia y efectivo contra entrega.</div></div>
+            <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">¿Puedo cambiar la talla después de hacer el pedido? <span>▼</span></div><div class="faq-a">Sí, comunícate con Angel lo antes posible mientras el pedido esté en Pendiente o Confirmado.</div></div>
+            <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">¿Hacen entregas a domicilio? <span>▼</span></div><div class="faq-a">Sí. Al confirmar tu pedido escribe tu dirección completa. Angel coordinará la entrega contigo.</div></div>
+            <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">¿Puedo comprar varios productos en un solo pedido? <span>▼</span></div><div class="faq-a">Sí. Agrega todos los productos que quieras al carrito antes de confirmar.</div></div>
+            <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">¿Qué hago si olvidé mi contraseña? <span>▼</span></div><div class="faq-a">Comunícate con Angel por WhatsApp al 3009985444 y él restablecerá tu acceso.</div></div>
+          </div>
+        </div>
+        <div class="manual-section contacto-section">
+          <h2>📲 Contacto</h2>
+          <p>¿Tienes alguna duda o problema con tu pedido? Escríbenos:</p>
+          <div class="contacto-btns">
+            <a href="https://wa.me/573009985444?text=Hola%20Angel,%20tengo%20una%20pregunta%20sobre%20mi%20pedido" target="_blank" class="btn-js btn-js-primary">💬 WhatsApp</a>
+            <a href="mailto:Angel@jsstore.com" class="btn-js btn-js-secondary">✉️ Email</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-adminDashboard">
+      <div class="view-header"><h1 class="view-title">DASHBOARD</h1></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-val" id="st-productos">-</div><div class="stat-lbl">Productos</div></div>
+        <div class="stat-card red"><div class="stat-icon">🛒</div><div class="stat-val" id="st-pedidos">-</div><div class="stat-lbl">Total Pedidos</div></div>
+        <div class="stat-card blue"><div class="stat-icon">⏳</div><div class="stat-val" id="st-pendientes">-</div><div class="stat-lbl">Pendientes</div></div>
+        <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-val" id="st-entregados">-</div><div class="stat-lbl">Entregados</div></div>
+        <div class="stat-card gold"><div class="stat-icon">💰</div><div class="stat-val" id="st-ingresos">-</div><div class="stat-lbl">Ingresos</div></div>
+        <div class="stat-card purple"><div class="stat-icon">👥</div><div class="stat-val" id="st-clientes">-</div><div class="stat-lbl">Clientes</div></div>
+      </div>
+      <div class="panel mt-4">
+        <div class="panel-head"><h3>ÚLTIMOS PEDIDOS</h3></div>
+        <div id="ultimosPedidos" class="panel-body"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-adminProductos">
+      <div class="view-header">
+        <h1 class="view-title">PRODUCTOS</h1>
+        <button class="btn-js btn-js-primary" onclick="AdminProductos.abrirFormNuevo()">+ NUEVO PRODUCTO</button>
+      </div>
+      <div class="table-responsive">
+        <table class="tabla-js">
+          <thead><tr><th>Foto</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead>
+          <tbody id="tablaProductosBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-adminPedidos">
+      <div class="view-header"><h1 class="view-title">TODOS LOS PEDIDOS</h1></div>
+      <div class="mb-3">
+        <select class="input-custom" style="max-width:200px" onchange="AdminPedidos.filtrarEstado(this.value)">
+          <option value="">Todos los estados</option>
+          <option>Pendiente</option><option>Confirmado</option>
+          <option>Enviado</option><option>Entregado</option><option>Cancelado</option>
+        </select>
+      </div>
+      <div id="adminPedidosList"></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="Modal.cerrar()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head"><h3 id="modalTitulo"></h3><button onclick="Modal.cerrar()">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/carrito.js"></script>
+<script src="js/catalogo.js"></script>
+<script src="js/misPedidos.js"></script>
+<script src="js/adminDashboard.js"></script>
+<script src="js/adminProductos.js"></script>
+<script src="js/adminPedidos.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
