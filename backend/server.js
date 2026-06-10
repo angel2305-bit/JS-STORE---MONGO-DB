@@ -40,7 +40,7 @@ app.use((err, req, res, next) => {
 
 // Conectar a MongoDB y luego iniciar el servidor
 conectar().then(() => {
-  app.listen(PUERTO, () => {
+  app.listen(PUERTO, '0.0.0.0', () => {
     console.log('╔════════════════════════════════════════╗');
     console.log('║   JS DEPORTIVE STORE v3 - MongoDB      ║');
     console.log(`║   http://localhost:${PUERTO}               ║`);
