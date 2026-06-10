@@ -2,7 +2,9 @@
  * server.js - Backend de JS Deportive Store
  * Angel De La Rosa - GA4-220501096-AA1-EV02
  */
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 const express = require('express');
 const cors    = require('cors');
 const morgan  = require('morgan');
