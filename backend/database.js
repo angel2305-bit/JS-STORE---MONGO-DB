@@ -52,7 +52,8 @@ const Pedido   = mongoose.model('Pedido',   pedidoSchema);
 
 // Conectar a MongoDB y crear datos iniciales si no existen
 async function conectar() {
-  await mongoose.connect(process.env.MONGODB_URI);
+  const uri = process.env.MONGODB_URI || 'mongodb+srv://angeladmin:jsstore2024@cluster0.erdd61y.mongodb.net/jsstore?appName=Cluster0';
+await mongoose.connect(uri);
   console.log('✅ Conectado a MongoDB Atlas');
   await _crearDatosIniciales();
 }
